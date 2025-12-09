@@ -25,7 +25,7 @@ public class TestDataProvider {
      * Falls back to default contacts if Excel is not available
      */
     public static List<Contact> getContactsFromExcel() {
-        List<Contact> excelContacts = ExcelDataReader.readContactsFromExcel();
+        List<Contact> excelContacts = ExcelDataReader.tryReadContactsFromExcel();
         return excelContacts.isEmpty() ? DEFAULT_CONTACTS : excelContacts;
     }
 
@@ -83,7 +83,7 @@ public class TestDataProvider {
      * Provides data source information
      */
     public static String getDataSourceInfo() {
-        List<Contact> excelContacts = ExcelDataReader.readContactsFromExcel();
+        List<Contact> excelContacts = ExcelDataReader.tryReadContactsFromExcel();
 
         if (excelContacts.isEmpty()) {
             return "Using DEFAULT test data (" + DEFAULT_CONTACTS.size() + " contacts)";

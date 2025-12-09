@@ -1,9 +1,7 @@
-package com.qaautomation.contactmanager;
+package com.qaautomation.contactmanager.data;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import com.qaautomation.contactmanager.Contact;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
@@ -16,18 +14,31 @@ public class ExcelDataReader {
 
     // Default path to the Excel file containing test data
     private static final String DEFAULT_EXCEL_PATH = "test-data/test-contacts.xlsx";
+    private static final String BACKUP_EXCEL_PATH = "test-data/backup-contcats.xlsx";
 
     /**
      * Reads contacts from the default Excel file.
      */
-    public static List<Contact> readContactsFromExcel() {
-        return readContactsFromExcel(DEFAULT_EXCEL_PATH);
+    public static List<Contact> readConctctsFromExcel() {
+        return readContactsFromExcel(DEFAULT_EXCEL_PATH, BACKUP_EXCEL_PATH);
     }
 
     /**
      * Reads contacts from the Excel file at the specified file path.
      */
-    public static List<Contact> readContactsFromExcel(String filePath) {
+    public static List<Contact> readContactsFromExcel (String primaryPath, String fallbackPath){
+        List<Contact> contacts = tryReadContactsFromExcel(primaryPath);
+        if(contacts.isEmpty() && fallbackPath != null){
+            System.out.println("Primary Excel file is not available, trying fallback...");
+            contacts = tryReadContactsFromExcel(fallbackPath);
+        }
+        if(contacts.isEmpty()){
+            System.out.println("No Excel data is available, will use default test data");
+        }
+        return  contacts;
+    }
+
+    public static List<Contact> tryReadContactsFromExcel(String filePath) {
         List<Contact> contacts = new ArrayList<>();
 
         try (FileInputStream file = new FileInputStream(filePath);
@@ -50,7 +61,7 @@ public class ExcelDataReader {
                 }
             }
 
-            System.out.println("Loaded " + contacts.size() + " contacts from: " + filePath);
+            System.out.println("Successfully loaded " + contacts.size() + " contacts from: " + filePath);
 
         } catch (IOException e) {
             System.err.println("Error reading Excel file '" + filePath + "': " + e.getMessage());
@@ -78,6 +89,32 @@ public class ExcelDataReader {
         return Contact.createContact(name.trim(), phoneNumber.trim());
     }
 
+    //// Checks whether a row can be considered a valid header row
+    private static boolean isHeaderRow(Row row){
+        if(row.getPhysicalNumberOfCells() < 2){
+            return false;
+        }
+        Cell firstCell = row.getCell(0);
+        Cell secondCell = row.getCell(1);
+
+        if(firstCell == null || secondCell == null){
+            return false;
+        }
+        String firstValue = getCellValueAsString(firstCell);
+        String secondValue = getCellValueAsString(secondCell);
+
+        return "name".equalsIgnoreCase(firstValue) &&
+                "phone".equalsIgnoreCase(secondValue) ||
+                "phone number".equalsIgnoreCase(secondValue) ||
+                "phonenumber".equalsIgnoreCase(secondValue);
+    }
+
+    private static boolean isValidContactData(String name, String phoneNumber){
+        return name != null && !name.trim().isEmpty() && phoneNumber !=null
+                && phoneNumber.trim().isEmpty() && name.trim().length() >= 1
+                && name.trim().length()<=100 && phoneNumber.trim().length() >= 1 && phoneNumber.trim().length();
+    }
+
     /**
      * Converts an Excel cell value to a String, handling common cell types.
      */
@@ -89,21 +126,83 @@ public class ExcelDataReader {
         switch (cell.getCellType()) {
             case STRING:
                 return cell.getStringCellValue();
-
             case NUMERIC:
-                double numericValue = cell.getNumericCellValue();
-                // Convert integer-like values (e.g., 123.0) to "123"
-                if (numericValue == Math.floor(numericValue)) {
-                    return String.valueOf((long) numericValue);
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
                 } else {
-                    return String.valueOf(numericValue);
+                    double numericValue = cell.getNumericCellValue();
+                    if (numericValue == Math.floor(numericValue)) {
+                        return String.valueOf((long) numericValue);
+                    } else {
+                        return String.valueOf(numericValue);
+                    }
                 }
-
             case BOOLEAN:
                 return String.valueOf(cell.getBooleanCellValue());
-
+            case FORMULA:
+                try {
+                    return cell.getStringCellValue();
+                } catch (Exception e) {
+                    return cell.getCellFormula();
+                }
             default:
                 return null;
         }
+
     }
+
+    public static boolean isTestDataAvailable() {
+        try {
+            List<Contact> contacts = readContactsFromExcel();
+            return !contacts.isEmpty();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static String getTestDataInfo() {
+        try {
+            List<Contact> contacts = readContactsFromExcel();
+            if (contacts.isEmpty()) {
+                return "Excel Test Data: No valid contacts found";
+            }
+
+            StringBuilder info = new StringBuilder();
+            info.append("Excel Test Data: ").append(contacts.size()).append(" contacts available\n");
+            info.append("Sample contacts: ");
+            for (int i = 0; i < Math.min(3, contacts.size()); i++) {
+                info.append(contacts.get(i).getName());
+                if (i < Math.min(3, contacts.size()) - 1) {
+                    info.append(", ");
+                }
+            }
+            return info.toString();
+        } catch (Exception e) {
+            return "Excel Test Data: Not available - " + e.getMessage();
+        }
+    }
+
+    public static List<Contact> getContactsForPerformanceTest(int count) {
+        List<Contact> allContacts = readContactsFromExcel();
+        List<Contact> performanceContacts = new ArrayList<>();
+
+        if (allContacts.isEmpty()) {
+            for (int i = 0; i < count; i++) {
+                performanceContacts.add(Contact.createContact("PerfUser" + i, "555-" + String.format("%04d", i)));
+            }
+        } else {
+            for (int i = 0; i < count; i++) {
+                Contact original = allContacts.get(i % allContacts.size());
+                performanceContacts.add(Contact.createContact(
+                        original.getName() + "_" + (i / allContacts.size() + 1),
+                        original.getPhoneNumber()
+                ));
+            }
+        }
+
+        return performanceContacts;
+    }
+
+
+}
 }
