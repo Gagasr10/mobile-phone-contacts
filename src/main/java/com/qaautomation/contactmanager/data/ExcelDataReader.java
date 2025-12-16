@@ -15,6 +15,14 @@ public class ExcelDataReader {
     // Default path to the Excel file containing test data
     private static final String DEFAULT_EXCEL_PATH = "test-data/test-contacts.xlsx";
     private static final String BACKUP_EXCEL_PATH = "test-data/backup-contcats.xlsx";
+    public static List<Contact> readContactsFromExcel() {
+        return readContactsFromExcel(DEFAULT_EXCEL_PATH, BACKUP_EXCEL_PATH);
+    }
+
+    public static List<Contact> tryReadContactsFromExcel() {
+        return tryReadContactsFromExcel(DEFAULT_EXCEL_PATH);
+    }
+
 
     /**
      * Reads contacts from the default Excel file.
@@ -109,11 +117,22 @@ public class ExcelDataReader {
                 "phonenumber".equalsIgnoreCase(secondValue);
     }
 
-    private static boolean isValidContactData(String name, String phoneNumber){
-        return name != null && !name.trim().isEmpty() && phoneNumber !=null
-                && phoneNumber.trim().isEmpty() && name.trim().length() >= 1
-                && name.trim().length()<=100 && phoneNumber.trim().length() >= 1 && phoneNumber.trim().length();
+    private static boolean isValidContactData(String name, String phoneNumber) {
+        if (name == null || phoneNumber == null) {
+            return false;
+        }
+
+        String trimmedName = name.trim();
+        String trimmedPhone = phoneNumber.trim();
+
+        return !trimmedName.isEmpty()
+                && !trimmedPhone.isEmpty()
+                && trimmedName.length() >= 1
+                && trimmedName.length() <= 100
+                && trimmedPhone.length() >= 1
+                && trimmedPhone.length() <= 30;
     }
+
 
     /**
      * Converts an Excel cell value to a String, handling common cell types.
@@ -205,4 +224,4 @@ public class ExcelDataReader {
 
 
 }
-}
+
