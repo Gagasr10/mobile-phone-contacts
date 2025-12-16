@@ -7,6 +7,10 @@ import com.qaautomation.contactmanager.reports.TestReporter;
 import com.aventstack.extentreports.ExtentTest;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -122,8 +126,67 @@ public class MobilePhoneTest {
     }
 
 
+    @ParameterizedTest
+    @ValueSource(strings = {"duplicate", "boundary"})
+    @DisplayName("TC004: Parameterized Contact Scenarios")
+    public void testParameterizedContactScenarios(String scenario){
+        TestReporter.startTest("Parametrized Test - Scenario: " + scenario);
+        TestReporter.logScenarioSetup("Testing with scenario: " + scenario);
 
+        List<Contact> scenarioContacts = TestDataProvider.getContactsForScenario(scenario);
+        TestReporter.logTestData("Scenario Contacts", scenarioContacts.size() + " contacts");
+
+        int addedCount = 0;
+        for(int i = 0; i<scenarioContacts.size(); i++){
+            Contact contact = scenarioContacts.get(i);
+            TestReporter.logDataIteration(i+ 1, contact.getName());
+            boolean result = phone.addNewContact(contact);
+            if(result){
+                addedCount++;
+                TestReporter.logPass("Added: " + contact.getName());
+            } else{
+                TestReporter.logWarning("Skipped (duplicate): " + contact.getName());
+            }
+        }
+        TestReporter.logInfo(("Successfully added " + addedCount + " out of " + scenarioContacts.size()
+                + " contacts"));
+        assertTrue(addedCount > 0, "Should add at least one contact in scenario: " + scenario);
     }
+
+    @Test
+    @DisplayName("TC005: Bulk Contact Operations")
+    public void testBulkContactOperations() {
+        TestReporter.startTest("Bulk Contact Operations");
+
+        List<Contact> contacts = TestDataProvider.getContactsFromExcel();
+        TestReporter.logTestData("Total contacts for bulk operations", contacts.size());
+
+        TestReporter.logStep("Performing bulk add operation");
+        long startTime = System.currentTimeMillis();
+        int addedCount = phone.addAllContacts(contacts);
+        long addTime = System.currentTimeMillis() - startTime;
+
+        TestReporter.logPerformanceMetric("Bulk add of " + contacts.size() + " contacts", addTime);
+        TestReporter.logInfo("Successfully added " + addedCount + " contacts");
+
+        TestReporter.logStep("Verifying all added contacts are retrievable");
+        int retrievableCount = 0;
+        for (Contact contact : contacts) {
+            if (phone.queryContact(contact.getName()) != null) {
+                retrievableCount++;
+            }
+        }
+
+        TestReporter.logValidationResult("Contact Retrieval",
+                retrievableCount == addedCount,
+                retrievableCount + " out of " + addedCount + " contacts retrievable");
+
+        assertEquals(addedCount, retrievableCount, "All added contacts should be retrievable");
+    }
+
+
+
+}
 
 
 
