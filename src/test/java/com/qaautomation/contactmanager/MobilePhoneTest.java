@@ -10,6 +10,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -183,6 +184,82 @@ public class MobilePhoneTest {
 
         assertEquals(addedCount, retrievableCount, "All added contacts should be retrievable");
     }
+
+
+    @Test
+    @DisplayName("TC006: Contact Validation Integration")
+    public void testContactValidationIntegration() {
+        TestReporter.startTest("Contact Validation Integration");
+
+        List<Contact> mixedContacts = Arrays.asList(
+                TestDataProvider.getContact(0),
+                Contact.createContact("", "555-0001"),
+                TestDataProvider.getContact(1),
+                Contact.createContact("Valid Name", "")
+        );
+
+        TestReporter.logTestData("Mixed validity contacts", mixedContacts.size());
+
+        int validAdded = 0;
+        int invalidSkipped = 0;
+
+        for (Contact contact : mixedContacts) {
+            DataValidator.ValidationResult validation = DataValidator.validateContact(contact);
+
+            if (validation.isValid()) {
+                boolean added = phone.addNewContact(contact);
+                if (added) {
+                    validAdded++;
+                    TestReporter.logPass("Valid contact added: " + contact.getName());
+                }
+            } else {
+                invalidSkipped++;
+                TestReporter.logWarning("Invalid contact skipped: " + contact.getName() + " - " + validation.getMessage());
+            }
+        }
+
+        TestReporter.logInfo("Results: " + validAdded + " valid added, " + invalidSkipped + " invalid skipped");
+        assertTrue(validAdded > 0, "Should add valid contacts");
+        assertTrue(invalidSkipped > 0, "Should skip invalid contacts");
+    }
+
+    @Test
+    @DisplayName("TC007: Comprehensive Contact Lifecycle")
+    public void testComprehensiveContactLifecycle() {
+        TestReporter.startTest("Comprehensive Contact Lifecycle");
+
+        Contact contact = TestDataProvider.getContact(0);
+        TestReporter.logStep("Starting lifecycle test for: " + contact.getName());
+
+        TestReporter.logStep("Phase 1 - Create");
+        boolean createResult = phone.addNewContact(contact);
+        assertTrue(createResult);
+        TestReporter.logPass("Creation successful");
+
+        TestReporter.logStep("Phase 2 - Read");
+        Contact readContact = phone.queryContact(contact.getName());
+        assertNotNull(readContact);
+        TestReporter.logPass("Read successful");
+
+        TestReporter.logStep("Phase 3 - Update");
+        Contact updatedContact = Contact.createContact(contact.getName(), "99999999");
+        boolean updateResult = phone.updateContact(contact, updatedContact);
+        assertTrue(updateResult);
+        TestReporter.logPass("Update successful");
+
+        TestReporter.logStep("Phase 4 - Delete");
+        boolean deleteResult = phone.removeContact(updatedContact);
+        assertTrue(deleteResult);
+        TestReporter.logPass("Delete successful");
+
+        TestReporter.logStep("Phase 5 - Verify Deletion");
+        Contact deletedContact = phone.queryContact(contact.getName());
+        assertNull(deletedContact);
+        TestReporter.logPass("Deletion verification successful");
+
+        TestReporter.logPass("Complete contact lifecycle test passed - All CRUD operations working correctly");
+    }
+
 
 
 
