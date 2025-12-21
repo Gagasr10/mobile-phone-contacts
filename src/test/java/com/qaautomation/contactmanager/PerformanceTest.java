@@ -74,4 +74,38 @@ public class PerformanceTest {
 
         TestReporter.logPass("Bulk addition performance test passed");
     }
+
+    @Test
+    @Timeout(value = 5, unit = TimeUnit.SECONDS)
+    @DisplayName("PERF002: Contact Query Performance")
+    public void testContactQueryPerformance() {
+        TestReporter.startTest("Contact Query Performance");
+
+        List<Contact> contacts = TestDataProvider.getContactsFromExcel();
+        phone.addAllContacts(contacts);
+        TestReporter.logTestData("Pre-loaded Contacts", contacts.size());
+
+        TestReporter.logStep("Starting query performance test");
+        long startTime = System.currentTimeMillis();
+
+        for (Contact contact : contacts) {
+            Contact result = phone.queryContact(contact.getName());
+            assertNotNull(result, "Contact should be found: " + contact.getName());
+        }
+
+        long totalTime = System.currentTimeMillis() - startTime;
+        double averageTimePerQuery = (double) totalTime / contacts.size();
+
+        TestReporter.logPerformanceMetric("Query " + contacts.size() + " contacts", totalTime);
+        TestReporter.logInfo("Average time per query: " + String.format("%.3f", averageTimePerQuery) + " ms");
+
+        assertTrue(totalTime < 3000, "Querying should complete within 3 seconds");
+        assertTrue(averageTimePerQuery < 5, "Average time per query should be less than 5ms");
+
+        TestReporter.logPass("Query performance test passed");
     }
+
+
+
+}
+
