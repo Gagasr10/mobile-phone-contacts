@@ -1,8 +1,36 @@
 Mobile Phone Contacts Manager
-An enterprise-ready Java application for managing contacts with comprehensive test automation and Excel data integration. This project demonstrates OOP principles, data validation, parameterized testing, and professional reporting using Extent Reports.
+
+Enterprise-ready Java console application for managing contacts with comprehensive test automation, Excel data integration, and professional HTML reporting.
+
+Project Overview
+
+Mobile Phone Contacts Manager is a Java console application that allows users to manage contacts through full CRUD operations.
+
+The application:
+
+Reads contact data from Excel (test-data/test-contacts.xlsx)
+
+Falls back to default contacts if the file is missing
+
+Includes enterprise-level automated testing
+
+Generates professional HTML reports using Extent Reports
+
+This project demonstrates:
+
+Clean OOP design
+
+Data validation layer
+
+Data-driven testing (Excel)
+
+Parameterized and performance testing
+
+Professional reporting with Extent Reports
+
+Maven-based build system
 
 Table of Contents
-Overview
 
 Features
 
@@ -12,21 +40,9 @@ Project Structure
 
 Getting Started
 
-Prerequisites
-
-Installation
-
-Running the Application
-
 Usage
 
 Testing
-
-Running Tests
-
-Test Reports
-
-Test Suites
 
 Data-Driven Testing
 
@@ -38,82 +54,98 @@ Contributing
 
 License
 
-Overview
-The Mobile Phone Contacts Manager is a Java console application that allows users to manage contacts (add, update, delete, query). It reads contact data from an Excel file (test-data/test-contacts.xlsx) and provides fallback default contacts if the file is unavailable. The project is built with Maven and includes a robust test suite using JUnit 5, parameterized tests, and Extent Reports for professional HTML test reports.
-
-This project is ideal for learning Java OOP, data-driven testing, and integration of external libraries like Apache POI and Extent Reports.
+Author
 
 Features
-Contact CRUD Operations: Create, read, update, and delete contacts.
+Contact Management
 
-Data Validation: Ensures contact names and phone numbers are non‑empty and within length limits.
+Create contact
 
-Excel Integration: Load contacts from an Excel file (.xlsx) using Apache POI.
+Update contact
 
-Fallback Default Data: If Excel file is missing, the application uses a predefined list of contacts.
+Delete contact
 
-Comprehensive Test Suite:
+Query contact
 
-Unit tests for MobilePhone class.
+Bulk import contacts
 
-Data-driven tests using Excel data.
+Data Validation
 
-Performance tests with timing assertions.
+Name cannot be empty
 
-Parameterized tests for duplicate and boundary scenarios.
+Phone number cannot be empty
 
-Professional Reporting: Extent Reports generates beautiful HTML reports with test details, steps, and performance metrics.
+Length validation
 
-Maven Build: Easy dependency management and build automation.
+Duplicate prevention
+
+Excel Integration
+
+Reads .xlsx files using Apache POI
+
+Fallback to predefined default data
+
+Automated Testing
+
+Unit tests (JUnit 5)
+
+Parameterized tests
+
+Data-driven tests
+
+Performance tests
+
+Professional HTML reporting
+
+Reporting
+
+Extent Reports 5
+
+Timestamped HTML reports
+
+Pass/Fail metrics
+
+Performance metrics
+
+Data tables
 
 Technologies
-Java 11 – Core language
-
-Maven – Build and dependency management
-
-JUnit 5 – Testing framework
-
-Extent Reports 5 – HTML reporting
-
-Apache POI – Reading Excel files
-
-Jackson – CSV/JSON support (optional)
-
-Commons IO – File utilities
-
-SLF4J – Logging
-
+Technology	Purpose
+Java 11	Core language
+Maven	Build and dependency management
+JUnit 5	Testing framework
+Extent Reports 5	HTML reporting
+Apache POI	Excel reading
+Jackson	CSV/JSON support (optional)
+Commons IO	File utilities
+SLF4J	Logging
 Project Structure
-text
 contactManager/
 ├── pom.xml
 ├── .gitignore
 ├── test-data/
-│   └── test-contacts.xlsx          # Excel test data (name, phone)
+│   └── test-contacts.xlsx
 ├── src/
-│   ├── main/
-│   │   └── java/
-│   │       └── com.qaautomation.contactmanager/
-│   │           ├── Contact.java            # Contact entity
-│   │           ├── MobilePhone.java        # Core contact management
-│   │           ├── Main.java                # Console entry point
-│   │           ├── data/
-│   │           │   ├── DataValidator.java   # Validation logic
-│   │           │   ├── ExcelDataReader.java # Excel reading
-│   │           │   └── TestDataProvider.java # Provides test data
-│   │           └── reports/
-│   │               ├── ExtentManager.java   # ExtentReports setup
-│   │               └── TestReporter.java    # Reporting utilities
-│   └── test/
-│       └── java/
-│           └── com.qaautomation.contactmanager/
-│               ├── DataDrivenTest.java      # Parameterized tests with Excel
-│               ├── MobilePhoneTest.java     # Unit tests for MobilePhone
-│               └── PerformanceTest.java     # Performance benchmarks
-└── test-output/                             # Generated test reports
-└── html-report/                          # Extent Reports HTML files
+│   ├── main/java/com.qaautomation.contactmanager/
+│   │   ├── Contact.java
+│   │   ├── MobilePhone.java
+│   │   ├── Main.java
+│   │   ├── data/
+│   │   │   ├── DataValidator.java
+│   │   │   ├── ExcelDataReader.java
+│   │   │   └── TestDataProvider.java
+│   │   └── reports/
+│   │       ├── ExtentManager.java
+│   │       └── TestReporter.java
+│   └── test/java/com.qaautomation.contactmanager/
+│       ├── DataDrivenTest.java
+│       ├── MobilePhoneTest.java
+│       └── PerformanceTest.java
+└── test-output/
+└── html-report/
 Getting Started
 Prerequisites
+
 Java 11 or higher
 
 Maven 3.6+
@@ -121,124 +153,106 @@ Maven 3.6+
 Git (optional)
 
 Installation
-Clone the repository:
-
-bash
 git clone https://github.com/Gagasr10/contactManager.git
 cd contactManager
-Build the project and download dependencies:
-
-bash
 mvn clean compile
 Running the Application
-Run the main class directly using Maven:
-
-bash
 mvn exec:java -Dexec.mainClass="com.qaautomation.contactmanager.Main"
-Or run from your favorite IDE by executing the Main class.
 
-The console menu will appear:
+Or run Main.java directly from your IDE.
 
-text
-MOBILE PHONE CONTACTS MANAGER
-=============================
-
-Created Mobile Phone: 061-123456
-
-=== DEMO 1: BASIC CONTACT OPERATIONS ===
-...
-The application automatically loads contacts from test-data/test-contacts.xlsx (if available) and demonstrates CRUD operations, validation, and data-driven features.
+The application automatically loads contacts from test-data/test-contacts.xlsx (if available).
 
 Usage
-The MobilePhone class provides the following public methods:
-
-boolean addNewContact(Contact contact) – Adds a contact if not duplicate.
-
-boolean updateContact(Contact oldContact, Contact newContact) – Updates an existing contact.
-
-boolean removeContact(Contact contact) – Removes a contact.
-
-Contact queryContact(String contactName) – Finds a contact by name.
-
-void printContacts() – Prints all contacts.
-
-int getContactCount() – Returns number of contacts.
-
-int addAllContacts(List<Contact> contacts) – Bulk adds contacts.
-
-boolean contactExists(String contactName) – Checks if a contact exists.
-
+Public API – MobilePhone
+boolean addNewContact(Contact contact);
+boolean updateContact(Contact oldContact, Contact newContact);
+boolean removeContact(Contact contact);
+Contact queryContact(String contactName);
+void printContacts();
+int getContactCount();
+int addAllContacts(List<Contact> contacts);
+boolean contactExists(String contactName);
 Testing
-Running Tests
-Execute all tests with Maven:
-
-bash
+Run All Tests
 mvn clean test
-Test results are displayed in the console, and detailed HTML reports are generated in test-output/html-report/.
 
+Reports are generated in:
+
+test-output/html-report/
 Test Reports
-Extent Reports create a timestamped HTML file (e.g., extent-report-2026-02-22-15-30-45.html) containing:
 
-Test suite overview
+Extent Reports generate timestamped HTML files such as:
 
-Pass/fail/skip counts
+extent-report-YYYY-MM-DD-HH-MM-SS.html
 
-Detailed logs for each test
+Each report contains:
+
+Suite summary
+
+Pass/Fail/Skip statistics
+
+Detailed logs
 
 Performance metrics
 
-Data tables for test inputs
+Input data tables
 
 Test Suites
 Test Class	Description
-MobilePhoneTest	Unit tests for all CRUD operations, validation, and edge cases.
-DataDrivenTest	Parameterized tests that read contact data from Excel.
-PerformanceTest	Measures execution time of bulk operations and queries with timeouts.
+MobilePhoneTest	CRUD operations and validation tests
+DataDrivenTest	Excel-driven parameterized tests
+PerformanceTest	Bulk operation and timing validation
 Data-Driven Testing
-The project uses an Excel file located at test-data/test-contacts.xlsx as the primary data source. The file should contain two columns:
+
+Excel file location:
+
+test-data/test-contacts.xlsx
+
+Expected structure:
 
 Name	Phone Number
 John Doe	555-0101
 Jane Smith	555-0102
-...	...
-If the file is missing, the TestDataProvider falls back to a set of default contacts.
 
-The DataDrivenTest class uses JUnit's @MethodSource to feed each contact from Excel into a test method, ensuring comprehensive coverage with real-world data.
+If the file is missing, TestDataProvider falls back to default contacts.
+
+DataDrivenTest uses JUnit @MethodSource to feed Excel data into parameterized tests.
 
 Performance Testing
-Performance tests validate that the application can handle bulk operations efficiently:
 
-Bulk Contact Addition: Measures time to add all contacts from Excel.
+Validates:
 
-Contact Query: Measures time to retrieve each contact by name.
+Bulk contact addition speed
 
-Tests include timeouts (e.g., 5 seconds) and assert that average time per operation stays within acceptable limits.
+Contact query speed
+
+Timeout limits (e.g., 5 seconds)
+
+Average execution time per operation
 
 Configuration
-Excel Path: The default Excel file path is test-data/test-contacts.xlsx. You can change it by modifying DEFAULT_EXCEL_PATH in ExcelDataReader.java.
-
-Logging: SLF4J is configured to output simple logs to the console.
-
-Report Output: HTML reports are saved in test-output/html-report/. You can change the output directory in ExtentManager.java.
-
+Configuration	Location
+Excel Path	ExcelDataReader.java (DEFAULT_EXCEL_PATH)
+Logging	SLF4J Console
+Report Output	ExtentManager.java
 Contributing
-Contributions are welcome! If you find a bug or have a feature request, please open an issue or submit a pull request.
+git checkout -b feature/my-feature
+git commit -m "Add my feature"
+git push origin feature/my-feature
 
-Fork the repository.
-
-Create a feature branch: git checkout -b feature/my-feature
-
-Commit your changes: git commit -am 'Add my feature'
-
-Push to the branch: git push origin feature/my-feature
-
-Open a pull request.
+Open a Pull Request.
 
 License
+
 This project is licensed under the MIT License – see the LICENSE file for details.
 
-Author: Dragan Stojilković
-GitHub: @Gagasr10
-Email: dragan.stojilkovic85@gmail.com
+Author
 
-For any questions or feedback, feel free to reach out!
+Dragan Stojilković
+
+GitHub: https://github.com/Gagasr10
+
+LinkedIn: https://www.linkedin.com/in/dragan-stojilkovic-35aa8426a
+
+Email: dragan.stojilkovic85@gmail.com
