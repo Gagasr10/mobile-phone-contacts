@@ -119,14 +119,54 @@ Apache POI	Excel reading
 Jackson	CSV/JSON support (optional)
 Commons IO	File utilities
 SLF4J	Logging
-Project Structure
+
+# Mobile Phone Contacts Manager
+
+Enterprise-ready Java console application for managing contacts with comprehensive test automation, Excel data integration, and professional HTML reporting.
+
+## Project Overview
+
+Mobile Phone Contacts Manager is a Java console application that allows users to manage contacts through full CRUD operations.
+
+The application:
+- Reads contact data from Excel (`test-data/test-contacts.xlsx`)
+- Falls back to default contacts if the Excel file is missing
+- Includes enterprise-level automated testing
+- Generates professional HTML reports using Extent Reports
+
+This project demonstrates:
+- Clean OOP design
+- Data validation layer
+- Data-driven testing with Excel
+- Parameterized and performance testing
+- Professional reporting with Extent Reports
+- Maven-based build system
+
+## Table of Contents
+
+- [Features](#features)
+- [Technologies](#technologies)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Testing](#testing)
+- [Data-Driven Testing](#data-driven-testing)
+- [Performance Testing](#performance-testing)
+- [Configuration](#configuration)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
+
+## Project Structure
+
+```bash
 contactManager/
 ├── pom.xml
 ├── .gitignore
 ├── test-data/
 │   └── test-contacts.xlsx
 ├── src/
-│   ├── main/java/com.qaautomation.contactmanager/
+│   ├── main/java/com/qaautomation/contactmanager/
 │   │   ├── Contact.java
 │   │   ├── MobilePhone.java
 │   │   ├── Main.java
@@ -137,12 +177,13 @@ contactManager/
 │   │   └── reports/
 │   │       ├── ExtentManager.java
 │   │       └── TestReporter.java
-│   └── test/java/com.qaautomation.contactmanager/
+│   └── test/java/com/qaautomation/contactmanager/
 │       ├── DataDrivenTest.java
 │       ├── MobilePhoneTest.java
 │       └── PerformanceTest.java
 └── test-output/
-└── html-report/
+    └── html-report/
+
 Getting Started
 Prerequisites
 
